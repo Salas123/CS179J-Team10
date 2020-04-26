@@ -12,4 +12,4 @@ Run ```npm install ```inside the project file
 Next, run ```expo start``` or ```npm start``` to run web app and open expo app to run it on your phone
 
 
-If it doesn't run on your phone, try  ```expo start--no-dev --minify```
+If it doesn't run on your phone, try  ```expo start --no-dev --minify```
