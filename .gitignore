@@ -8,6 +8,10 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+babel.config.js
+package-lock.json
+package.json
+yarn.lock
 web-build/
 web-report/
 
