@@ -58,7 +58,7 @@ export default function App() {
          <Text style={{fontSize:20, color:"#000"}}>Camera Area</Text>
       </View>
       <View>
-        <Button
+        <Button id="up-button"
           icon={
             <Icon
               raised
@@ -71,7 +71,7 @@ export default function App() {
             />
           }
           />
-        <Button
+        <Button id="left-button"
             icon={
               <Icon
                 raised
@@ -84,7 +84,7 @@ export default function App() {
               />
             }
             />
-        <Button
+        <Button id="right-button"
           icon={
             <Icon
               raised
@@ -97,7 +97,7 @@ export default function App() {
             />
           }
           />
-        <Button
+        <Button id="down-button"
             icon={
               <Icon
                 raised
