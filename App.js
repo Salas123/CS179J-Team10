@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Icon, Button, ButtonGroup, ThemeProvider, Header } from "react-native-elements";
 
 export default function App() {
+  var flashStatus = false;
 
   function openMenu() {
     console.log('This will open up the menu.');
@@ -34,6 +35,24 @@ export default function App() {
     alert('Camera will move downwards.');
   }
 
+  function takePicture() {
+    console.log('Camera will snap picture.');
+    alert('Camera will snap picture.');
+  }
+
+  function flash() {
+    if (flashStatus) {
+      console.log('Flash will turn off.');
+      alert('Flash will turn off.');
+      flashStatus=false;
+    }
+    else {
+      console.log('Flash will turn on.');
+      alert('Flash will turn on.');
+      flashStatus=true;
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Header
@@ -57,59 +76,90 @@ export default function App() {
       <View style={styles.camera}>
          <Text style={{fontSize:20, color:"#000"}}>Camera Area</Text>
       </View>
-      <View>
-        <Button id="up-button"
-          icon={
-            <Icon
-              raised
-              reverse
-              name="arrow-up"
-              type='font-awesome'
-              size={40}
-              color='#000'
-              onPress={moveUp}
-            />
-          }
-          />
-        <Button id="left-button"
+      <View style={styles.controls}>
+        <View>
+          <Button id="up-button"
             icon={
               <Icon
                 raised
                 reverse
-                name="arrow-left"
+                name="arrow-up"
                 type='font-awesome'
                 size={40}
                 color='#000'
-                onPress={moveLeft}
+                onPress={moveUp}
               />
             }
             />
-        <Button id="right-button"
-          icon={
-            <Icon
-              raised
-              reverse
-              name="arrow-right"
-              type='font-awesome'
-              size={40}
-              color='#000'
-              onPress={moveRight}
-            />
-          }
-          />
-        <Button id="down-button"
+        </View>
+        <View style={styles.fixToText}>
+          <Button id="left-button"
+              icon={
+                <Icon
+                  raised
+                  reverse
+                  name="arrow-left"
+                  type='font-awesome'
+                  size={40}
+                  color='#000'
+                  onPress={moveLeft}
+                />
+              }
+              />
+          <Button id="right-button"
             icon={
               <Icon
                 raised
                 reverse
-                name="arrow-down"
+                name="arrow-right"
                 type='font-awesome'
                 size={40}
                 color='#000'
-                onPress={moveDown}
+                onPress={moveRight}
               />
             }
             />
+        </View>
+        <View style={styles.fixToText}>
+        <Button id="camera-button"
+          icon={
+            <Icon
+              raised
+              reverse
+              name="camera"
+              type='font-awesome'
+              size={40}
+              color='#32CD32'
+              onPress={takePicture}
+            />
+          }
+          />
+          <Button id="down-button"
+              icon={
+                <Icon
+                  raised
+                  reverse
+                  name="arrow-down"
+                  type='font-awesome'
+                  size={40}
+                  onPress={moveDown}
+                />
+              }
+              />
+          <Button id="flash-button"
+            icon={
+              <Icon
+                raised
+                reverse
+                name="bolt"
+                type='font-awesome'
+                size={40}
+                color='#B22222'
+                onPress={flash}
+              />
+            }
+          />
+        </View>
       </View>
     </View>
   );
@@ -128,14 +178,19 @@ const styles = StyleSheet.create({
    borderBottomColor: 'black',
   },
   camera: {
-   backgroundColor:"#89A6FB",
+   backgroundColor:"#f3e9d2",
    flex:1,
    justifyContent: "center",
    alignItems: "center",
   },
   controls: {
-   backgroundColor:"#f3e9d2",
+   backgroundColor:"rgb(32, 137, 220)",
    flex:1,
    alignItems: "center",
  },
+  fixToText: {
+    backgroundColor:"rgb(32, 137, 220)",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 });
