@@ -1,8 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Icon, Button, ButtonGroup, ThemeProvider, Header } from "react-native-elements";
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function App() {
+function CameraScreen() {
   var flashStatus = false;
 
   function openMenu() {
@@ -163,6 +166,159 @@ export default function App() {
       </View>
     </View>
   );
+}
+
+function CarScreen() {
+
+  function openMenu() {
+    console.log('This will open up the menu.');
+    alert('This will open up the menu.');
+  }
+
+  function bluetoothConnection() {
+    console.log('This will check for the bluetooth connection.');
+    alert('This will check for the bluetooth connection.');
+  }
+
+  function moveUp() {
+    console.log('Car will move upwards.');
+    alert('Car will move upwards.');
+  }
+
+  function moveLeft() {
+    console.log('Car will move to the left.');
+    alert('Car will move to the left.');
+  }
+
+  function moveRight() {
+    console.log('Car will move to the right.');
+    alert('Car will move to the right.');
+  }
+
+  function moveDown() {
+    console.log('Car will move downwards.');
+    alert('Car will move downwards.');
+  }
+
+  return (
+    <View style={styles.container}>
+      <Header
+        leftComponent=<Icon
+          raised
+          reverse
+          name='bars'
+          type='font-awesome'
+          color='#000'
+          onPress={openMenu} />
+        centerComponent={{ text: 'Smart Tripod Camera', style: { fontSize:24, color: '#fff', fontWeight: 'bold' } }}
+        rightComponent=<Icon
+          raised
+          reverse
+          name='bluetooth'
+          type='font-awesome'
+          color='#000'
+          onPress={bluetoothConnection}/>
+        containerStyle={styles.title}
+      />
+      <View style={styles.camera}>
+         <Text style={{fontSize:20, color:"#000"}}>Camera Area</Text>
+      </View>
+      <View style={styles.controls}>
+        <View>
+          <Button id="up-button"
+            icon={
+              <Icon
+                raised
+                reverse
+                name="arrow-up"
+                type='font-awesome'
+                size={40}
+                color='#000'
+                onPress={moveUp}
+              />
+            }
+            />
+        </View>
+        <View style={styles.fixToText}>
+          <Button id="left-button"
+              icon={
+                <Icon
+                  raised
+                  reverse
+                  name="arrow-left"
+                  type='font-awesome'
+                  size={40}
+                  color='#000'
+                  onPress={moveLeft}
+                />
+              }
+              />
+          <Button id="right-button"
+            icon={
+              <Icon
+                raised
+                reverse
+                name="arrow-right"
+                type='font-awesome'
+                size={40}
+                color='#000'
+                onPress={moveRight}
+              />
+            }
+            />
+        </View>
+        <View style={styles.fixToText}>
+          <Button id="down-button"
+              icon={
+                <Icon
+                  raised
+                  reverse
+                  name="arrow-down"
+                  type='font-awesome'
+                  size={40}
+                  onPress={moveDown}
+                />
+              }
+              />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+export default function App() {
+  return (
+   <NavigationContainer>
+     <Tab.Navigator
+       barStyle={{ backgroundColor: '#694fad' }}
+       screenOptions={({ route }) => ({
+         tabBarIcon: ({ focused, color, size }) => {
+           let iconName;
+
+           if (route.name === 'Camera') {
+             iconName = focused
+               ? 'ios-camera'
+               : 'ios-camera';
+           } else if (route.name === 'Car') {
+             iconName = focused ? 'ios-car' : 'ios-car';
+           }
+
+           // You can return any component that you like here!
+           return <Ionicons name={iconName} size={size} color={color} />;
+         },
+       })}
+       tabBarOptions={{
+         activeTintColor: 'blue',
+         inactiveTintColor: 'gray',
+       }}
+     >
+       <Tab.Screen name="Camera" component={CameraScreen} />
+       <Tab.Screen name="Car" component={CarScreen} />
+     </Tab.Navigator>
+   </NavigationContainer>
+ );
 }
 
 const styles = StyleSheet.create({
