@@ -286,6 +286,86 @@ function CarScreen() {
   );
 }
 
+function LAScreen() {
+
+  function openMenu() {
+    console.log('This will open up the menu.');
+    alert('This will open up the menu.');
+  }
+
+  function bluetoothConnection() {
+    console.log('This will check for the bluetooth connection.');
+    alert('This will check for the bluetooth connection.');
+  }
+
+  function moveLAUp() {
+    console.log('Linear Actuator will move upwards.');
+    alert('Linear Actuator will move upwards.');
+  }
+
+  function moveLADown() {
+    console.log('Linear Actuator will move downwards.');
+    alert('Linear Actuator will move downwards.');
+  }
+
+  return (
+    <View style={styles.container}>
+      <Header
+        leftComponent=<Icon
+          raised
+          reverse
+          name='bars'
+          type='font-awesome'
+          color='#000'
+          onPress={openMenu} />
+        centerComponent={{ text: 'Smart Tripod Camera', style: { fontSize:24, color: '#fff', fontWeight: 'bold' } }}
+        rightComponent=<Icon
+          raised
+          reverse
+          name='bluetooth'
+          type='font-awesome'
+          color='#000'
+          onPress={bluetoothConnection}/>
+        containerStyle={styles.title}
+      />
+      <View style={styles.camera}>
+         <Text style={{fontSize:20, color:"#000"}}>Camera Area</Text>
+      </View>
+      <View style={styles.controls}>
+        <View>
+          <Button id="up-button"
+            icon={
+              <Icon
+                raised
+                reverse
+                name="arrow-up"
+                type='font-awesome'
+                size={40}
+                color='#000'
+                onPress={moveLAUp}
+              />
+            }
+            />
+        </View>
+        <View style={styles.fixToText}>
+          <Button id="down-button"
+              icon={
+                <Icon
+                  raised
+                  reverse
+                  name="arrow-down"
+                  type='font-awesome'
+                  size={40}
+                  onPress={moveLADown}
+                />
+              }
+              />
+        </View>
+      </View>
+    </View>
+  );
+}
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -298,11 +378,11 @@ export default function App() {
            let iconName;
 
            if (route.name === 'Camera') {
-             iconName = focused
-               ? 'ios-camera'
-               : 'ios-camera';
+             iconName = focused ? 'ios-camera' : 'ios-camera';
            } else if (route.name === 'Car') {
              iconName = focused ? 'ios-car' : 'ios-car';
+           } else if (route.name === 'Height') {
+             iconName = focused ? 'ios-resize' : 'ios-resize';
            }
 
            // You can return any component that you like here!
@@ -316,6 +396,7 @@ export default function App() {
      >
        <Tab.Screen name="Camera" component={CameraScreen} />
        <Tab.Screen name="Car" component={CarScreen} />
+       <Tab.Screen name="Height" component={LAScreen} />
      </Tab.Navigator>
    </NavigationContainer>
  );
