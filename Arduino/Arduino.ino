@@ -50,28 +50,26 @@ void linearActuatorSetup(){
 }
 
 void linearActuatorSerial(uint8_t temp){
-  if (Serial.available() > 0) {
-    switch (temp){
-      case 0x01:
-        if(pwm > 1000){
-          pwm -= 5;
-        }
-        Serial.println("retract received");
-        break;
+  switch (temp){
+    case 0x01:
+      if(pwm > 1000){
+        pwm -= 5;
+      }
+      Serial.println("retract received");
+      break;
 
-      case 0x02:
-        if(pwm < 2000){
-          pwm += 5;
-        }
-        Serial.println("retract received");
-        break;
+    case 0x02:
+      if(pwm < 2000){
+        pwm += 5;
+      }
+      Serial.println("retract received");
+      break;
 
-      default:
-        Serial.println("unrecognized");
-        break;
-    }
-    actuator.writeMicroseconds(pwm);
+    default:
+      Serial.println("unrecognized");
+      break;
   }
+  actuator.writeMicroseconds(pwm);
 }
 
 void cameraSetup(){
