@@ -51,14 +51,14 @@ void linearActuatorSetup(){
 
 void linearActuatorSerial(uint8_t temp){
   switch (temp){
-    case 0x01:
+    case 0x11:
       if(pwm > 1000){
         pwm -= 5;
       }
       Serial.println("retract received");
       break;
 
-    case 0x02:
+    case 0x12:
       if(pwm < 2000){
         pwm += 5;
       }

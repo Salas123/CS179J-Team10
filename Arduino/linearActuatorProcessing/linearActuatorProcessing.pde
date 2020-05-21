@@ -20,12 +20,12 @@ void keyPressed(){
   switch(key) {
  
     case 'a':
-      mySerial.write(0x01);
+      mySerial.write(0x11);
       println("Sending retract signal");
       break;
 
     case 's':
-      mySerial.write(0x02);
+      mySerial.write(0x12);
       println("sending extend signal");
       break;
 
