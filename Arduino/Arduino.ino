@@ -1,48 +1,79 @@
-//Bailey and Kathleen Collaborated Code 
+//Collaborated Code with Kathleen & Bailey
+#include <Servo.h>
 #include <Wire.h>
 #include <ArduCAM.h>
 #include <SPI.h>
 #include "memorysaver.h"
- 
- 
- 
-//This code can only work on OV5642_MINI_5MP_PLUS platform.
- 
-#if !(defined (OV2640_MINI_2MP))
 
+//This code can only work on OV5642_MINI_5MP_PLUS platform.
+#if !(defined (OV2640_MINI_2MP))
 #endif
- 
 #define   FRAMES_NUM    0x00
- 
- 
- 
+
 // set pin 4 as the slave select for SPI:
+//camera declarations
 const int CS1 = 7;
 bool CAM1_EXIST = false;
 bool stopMotion = false;
 ArduCAM myCAM1(OV2640, CS1);
 long int streamStartTime;
- 
+
+//linear actuator declarations
+Servo actuator;
+const int pwmPin = 9; //change to pwm pin
+int pwm = 1000;
+
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(250000); //921600
+  linearActuatorSetup();
   cameraSetup();
 }
- 
- 
- 
+
 void loop() {
-  Serial.begin(250000); //921600
   cameraLoop();
 }
 
-void serialEvent() {
+void serialEvent(){
   if (Serial.available() > 0) {
-    uint8_t temp = 0xff
+    uint8_t temp = 0xff;
     temp = Serial.read();
+    linearActuatorSerial(temp);
     cameraSerial(temp);
   }
 }
- 
+
+void linearActuatorSetup(){
+  actuator.attach(pwmPin);
+  actuator.writeMicroseconds(1000);
+  delay(2000);
+}
+
+void linearActuatorSerial(uint8_t temp){
+  if (Serial.available() > 0) {
+    switch (temp){
+      case 0x01:
+        if(pwm > 1000){
+          pwm -= 5;
+        }
+        Serial.println("retract received");
+        break;
+
+      case 0x02:
+        if(pwm < 2000){
+          pwm += 5;
+        }
+        Serial.println("retract received");
+        break;
+
+      default:
+        Serial.println("unrecognized");
+        break;
+    }
+    actuator.writeMicroseconds(pwm);
+  }
+}
+
 void cameraSetup(){
   uint8_t vid, pid;
   uint8_t temp;
@@ -101,8 +132,7 @@ void cameraLoop(){
     Serial.println("fps: " + String(1 / fps ));
   }
 }
- 
- 
+
 void myCAMSendToSerial(ArduCAM myCAM) {
   char str[8];
   byte buf[5];
