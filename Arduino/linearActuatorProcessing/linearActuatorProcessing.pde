@@ -6,7 +6,7 @@ byte rawBytes[];
  String s;
 void setup(){
   size(500,500);
-  mySerial = new Serial(this, "COM7", 9600); //change COM to appropriate COM
+  mySerial = new Serial(this, "COM7", 250000); //change COM to appropriate COM
   textSize(30);
   s = "Press a for retract\nPress s for extend";
 }
