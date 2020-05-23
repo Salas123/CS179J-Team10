@@ -1,4 +1,5 @@
 //Collaborated Code with Kathleen & Bailey
+//Code Merged with Camera and Linear Actuator
 #include <Servo.h>
 #include <Wire.h>
 #include <ArduCAM.h>
