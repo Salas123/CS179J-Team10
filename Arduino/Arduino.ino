@@ -20,12 +20,12 @@ long int streamStartTime;
 
 //linear actuator declarations
 Servo actuator;
-const int pwmPin = 9; //change to pwm pin
+const int pwmPin = 10; //change to pwm pin
 int pwm = 1000;
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(250000); //921600
+  Serial.begin(28800); //921600
   linearActuatorSetup();
   cameraSetup();
 }
@@ -66,7 +66,7 @@ void linearActuatorSerial(uint8_t temp){
       break;
 
     default:
-      Serial.println("unrecognized");
+     // Serial.println("unrecognized");
       break;
   }
   actuator.writeMicroseconds(pwm);
