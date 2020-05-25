@@ -24,11 +24,18 @@ Servo actuator;
 const int pwmPin = 10; //change to pwm pin
 int pwm = 1000;
 
+//chasis declarations
+const int A1A = 3;
+const int A1B = 2;
+const int B1A = 4;
+const int B1B = 5;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(28800); //921600
   linearActuatorSetup();
   cameraSetup();
+  chasisSetup();
 }
 
 void loop() {
@@ -41,6 +48,7 @@ void serialEvent(){
     temp = Serial.read();
     linearActuatorSerial(temp);
     cameraSerial(temp);
+    chasisSerial(temp);
   }
 }
 
@@ -121,6 +129,13 @@ void cameraSetup(){
  
   myCAM1.clear_fifo_flag();
   Serial.println("Ready:,1");
+}
+
+void chasisSetup(){
+  pinMode(A1A, OUTPUT);
+  pinMode(A1B, OUTPUT);
+  pinMode(B1A, OUTPUT);
+  pinMode(B1B, OUTPUT);
 }
 
 void cameraLoop(){
@@ -252,6 +267,49 @@ void cameraSerial(uint8_t temp){
       }
       break;
     default:
+      break;
+  }
+}
+
+void chasisSerial(uint8_t temp){
+  switch(temp){
+    case 0x21:
+      //Fowards
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, HIGH);
+      digitalWrite(B1A, HIGH);
+      digitalWrite(B1B, LOW);
+      break;
+
+    case 0x22:
+      //Back
+      digitalWrite(A1A, HIGH);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, HIGH);
+      break;
+
+    case 0x23:
+      //Right
+      digitalWrite(A1A, HIGH);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, HIGH);
+      digitalWrite(B1B, LOW);
+      break;
+
+    case 0x24:
+      //Left
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, HIGH);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, HIGH);
+      break;
+
+    default:
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
       break;
   }
 }
