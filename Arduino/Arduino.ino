@@ -30,12 +30,25 @@ const int A1B = 2;
 const int B1A = 4;
 const int B1B = 5;
 
+//pantilt declarations
+Servo servo1; // first servo will control left/right movement
+Servo servo2; // second servo will control up/down movement
+
+const int pantiltLR = 9;//@Kathleen may need to change
+const int pantiltUD = 10;//@Kathleen may need to change
+int s1_angle = 90;  // servo1 will start at 90 degrees
+int s2_angle = 90;  // servo2 will start at 90 degrees
+int angleStep = 5;  // each servo will only move at 5 degrees per quarter-second
+
+//BLE declarations none
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(28800); //921600
   linearActuatorSetup();
   cameraSetup();
   chasisSetup();
+  pantiltSetup();
 }
 
 void loop() {
@@ -49,6 +62,7 @@ void serialEvent(){
     linearActuatorSerial(temp);
     cameraSerial(temp);
     chasisSerial(temp);
+    pantiltSerial(temp);
   }
 }
 
@@ -136,6 +150,13 @@ void chasisSetup(){
   pinMode(A1B, OUTPUT);
   pinMode(B1A, OUTPUT);
   pinMode(B1B, OUTPUT);
+}
+
+void pantiltSetup(){
+  servo1.attach(pantiltLR);   // attaches the servo on pin 9 to the servo object: LEFT AND RIGHT
+  servo2.attach(pantiltUD);   // attaches the servo on pin 10 to the servo object :UP AND DOWN
+  servo1.write(s1_angle);  // send servo1 to the middle at 90 degrees
+  servo2.write(s2_angle);  // send servo2 to the middle at 90 degrees
 }
 
 void cameraLoop(){
@@ -310,6 +331,81 @@ void chasisSerial(uint8_t temp){
       digitalWrite(A1B, LOW);
       digitalWrite(B1A, LOW);
       digitalWrite(B1B, LOW);
+      break;
+  }
+}
+
+void pantiltSerial(uint8_t temp){
+  switch(temp){
+    case 0x31:
+      //SERVO1 right
+      if (s1_angle > 0 && s1_angle <= 180) {
+        s1_angle = s1_angle - angleStep;
+        if (s1_angle < 0) {
+          s1_angle = 0;
+        }
+        else {
+          servo1.write(s1_angle); // move the servo to desired angle
+          Serial.print("Moved to: ");
+          Serial.print(s1_angle);   // print the angle
+          Serial.println(" degree");
+        }
+      }
+      delay(250); // waits for the servo to get there
+      break;
+
+    case 0x32:
+      //SERVO1 left
+      if (s1_angle >= 0 && s1_angle < 180) {
+        s1_angle = s1_angle + angleStep;
+        if (s1_angle > 180) {
+          s1_angle = 180;
+        }
+        else {
+          servo1.write(s1_angle); // move the servo to desired angle
+          Serial.print("Moved to: ");
+          Serial.print(s1_angle);   // print the angle
+          Serial.println(" degree");
+        }
+      }
+      delay(250); // waits for the servo to get there
+      break;
+
+    case 0x33:
+      //SERVO2 up
+      if (s2_angle > 90 && s2_angle <= 180) {
+        s2_angle = s2_angle - angleStep;
+        if (s2_angle < 90) {
+          s2_angle = 90;
+        }
+        else {
+          servo2.write(s2_angle); // move the servo to desired angle
+          Serial.print("Moved to: ");
+          Serial.print(s2_angle);   // print the angle
+          Serial.println(" degree");
+        }
+      }
+      delay(250); // waits for the servo to get there]
+      break;
+
+    case 0x34:
+      //SERVO2 down
+      if (s2_angle >= 90 && s2_angle < 180) {
+        s2_angle = s2_angle + angleStep;
+        if (s1_angle > 180) {
+          s2_angle = 180;
+        }
+        else {
+          servo2.write(s2_angle); // move the servo to desired angle
+          Serial.print("Moved to: ");
+          Serial.print(s2_angle);   // print the angle
+          Serial.println(" degree");
+        }
+      }
+      delay(250); // waits for the servo to get there
+      break;
+
+    default:
       break;
   }
 }
