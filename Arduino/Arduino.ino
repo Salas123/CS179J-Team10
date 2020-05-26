@@ -35,7 +35,7 @@ Servo servo1; // first servo will control left/right movement
 Servo servo2; // second servo will control up/down movement
 
 const int pantiltLR = 9;//@Kathleen may need to change
-const int pantiltUD = 10;//@Kathleen may need to change
+const int pantiltUD = 6;//@Kathleen may need to change
 int s1_angle = 90;  // servo1 will start at 90 degrees
 int s2_angle = 90;  // servo2 will start at 90 degrees
 int angleStep = 5;  // each servo will only move at 5 degrees per quarter-second
