@@ -144,12 +144,12 @@ void laKP(){
   switch(key) {
  
     case 'g':
-      mySerial.write(0x11);
+      mySerial.write(0x08);
       println("Sending retract signal");
       break;
 
     case 't':
-      mySerial.write(0x12);
+      mySerial.write(0x07);
       println("sending extend signal");
       break;
 
@@ -180,22 +180,22 @@ void pantiltKP(){
   switch(key) {
  
     case 'i':
-      mySerial.write(0x33);
+      mySerial.write(0x03);
       println("Sending up signal");
       break;
 
     case 'k':
-      mySerial.write(0x34);
+      mySerial.write(0x04);
       println("sending down signal");
       break;
     
     case 'l':
-      mySerial.write(0x32);
+      mySerial.write(0x06);
       println("sending right signal");
       break;
     
     case 'j':
-      mySerial.write(0x31);
+      mySerial.write(0x05);
       println("sending left signal");
       break;
 
@@ -236,22 +236,22 @@ void chasisKP(){
   switch(key) {
  
     case 'w':
-      mySerial.write(0x24);
+      mySerial.write(0x09);
       println("Farther Back signal");
       break;
 
     case 's':
-      mySerial.write(0x23);
+      mySerial.write(0x0A);
       println("Come Closer signal");
       break;
     
     case 'd':
-      mySerial.write(0x22);
+      mySerial.write(0x0C);
       println("sending right signal");
       break;
     
     case 'a':
-      mySerial.write(0x21);
+      mySerial.write(0x0B);
       println("sending left signal");
       break;
 

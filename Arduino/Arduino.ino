@@ -52,7 +52,7 @@ void setup() {
 }
 
 void loop() {
- cameraLoop();
+// cameraLoop();
 }
 
 void serialEvent(){
@@ -62,13 +62,13 @@ void serialEvent(){
     if(temp == 0x10){
       cameraSerial(temp);
     }
-    if(temp >= 0x11 && temp <= 0x13){
+    if(temp >= 0x07 && temp <= 0x08){
       linearActuatorSerial(temp);
     }
-    else if(temp >= 0x21 && temp <= 0x25){
+    else if(temp >= 0x09 && temp <= 0x0C){
       chasisSerial(temp);
     }
-    else if(temp >= 0x31 && temp <= 0x35){
+    else if(temp >= 0x03 && temp <= 0x06){
       pantiltSerial(temp);
     }
   }
@@ -82,14 +82,14 @@ void linearActuatorSetup(){
 
 void linearActuatorSerial(uint8_t temp){
   switch (temp){
-    case 0x11:
+    case 0x08:
       if(pwm > 1000){
         pwm -= 5;
       }
       Serial.println("retract received");
       break;
 
-    case 0x12:
+    case 0x07:
       if(pwm < 2000){
         pwm += 5;
       }
@@ -168,7 +168,7 @@ void pantiltSetup(){
 }
 
 void cameraLoop(){
-  if (CAM1_EXIST && stopMotion) {
+  if (CAM1_EXIST) {
     streamStartTime = millis();
     myCAMSendToSerial(myCAM1);
     double fps = ((millis() - streamStartTime) / 1000);
@@ -302,39 +302,57 @@ void cameraSerial(uint8_t temp){
 
 void chasisSerial(uint8_t temp){
   switch(temp){
-    case 0x21:
+    case 0x0B:
       //Left
       digitalWrite(B1A, HIGH);
       digitalWrite(B1B, LOW);
       digitalWrite(A1A, LOW);
       digitalWrite(A1B, HIGH);
-      
+      delay(30);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
       break;
 
-    case 0x22:
+    case 0x0C:
       //Right
       digitalWrite(B1A, LOW);
       digitalWrite(B1B, HIGH); 
       digitalWrite(A1A, HIGH);
       digitalWrite(A1B, LOW);
-
+      delay(30);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
       break;
 
-    case 0x23:
+    case 0x0A:
       //Come Closer
       digitalWrite(B1A, HIGH);
       digitalWrite(B1B, LOW);
       digitalWrite(A1A, HIGH);
       digitalWrite(A1B, LOW);
+      delay(30);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
 
       break;
 
-    case 0x24:
+    case 0x09:
       //Back up
       digitalWrite(B1A, LOW);
       digitalWrite(B1B, HIGH);
       digitalWrite(A1A, LOW);
       digitalWrite(A1B, HIGH);
+      delay(30);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
 
       break;
 
@@ -349,7 +367,7 @@ void chasisSerial(uint8_t temp){
 
 void pantiltSerial(uint8_t temp){
   switch(temp){
-    case 0x31:
+    case 0x05:
       //SERVO1 left
       if (s1_angle > 0 && s1_angle <= 180) {
         s1_angle = s1_angle - angleStep;
@@ -366,7 +384,7 @@ void pantiltSerial(uint8_t temp){
       delay(250); // waits for the servo to get there
       break;
 
-    case 0x32:
+    case 0x06:
       //SERVO1 Right
       if (s1_angle >= 0 && s1_angle < 180) {
         s1_angle = s1_angle + angleStep;
@@ -383,7 +401,7 @@ void pantiltSerial(uint8_t temp){
       delay(250); // waits for the servo to get there
       break;
 
-    case 0x33:
+    case 0x03:
       //SERVO2 up
       if (s2_angle > 90 && s2_angle <= 180) {
         s2_angle = s2_angle - angleStep;
@@ -400,7 +418,7 @@ void pantiltSerial(uint8_t temp){
       delay(250); // waits for the servo to get there]
       break;
 
-    case 0x34:
+    case 0x04:
       //SERVO2 down
       if (s2_angle >= 90 && s2_angle < 180) {
         s2_angle = s2_angle + angleStep;
