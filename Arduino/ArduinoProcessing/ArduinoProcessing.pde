@@ -162,12 +162,12 @@ void laKR(){
   switch(key) {
  
     case 'g':
-      mySerial.write(0x00);
+      mySerial.write(0x13);
       println("Finish retract signal");
       break;
 
     case 't':
-      mySerial.write(0x00);
+      mySerial.write(0x13);
       println("Finish extend signal");
       break;
 
@@ -208,22 +208,22 @@ void pantiltKR(){
  switch(key) {
  
     case 'i':
-      mySerial.write(0x00);
+      mySerial.write(0x35);
       println("finished signal");
       break;
 
     case 'k':
-      mySerial.write(0x00);
+      mySerial.write(0x35);
       println("finished signal");
       break;
     
     case 'l':
-      mySerial.write(0x00);
+      mySerial.write(0x35);
       println("finished signal");
       break;
     
     case 'j':
-      mySerial.write(0x00);
+      mySerial.write(0x35);
       println("finished signal");
       break;
 
@@ -264,22 +264,22 @@ void chasisKR(){
   switch(key) {
  
     case 'w':
-      mySerial.write(0x00);
+      mySerial.write(0x25);
       println("finished signal");
       break;
 
     case 's':
-      mySerial.write(0x00);
+      mySerial.write(0x25);
       println("finished signal");
       break;
     
     case 'a':
-      mySerial.write(0x00);
+      mySerial.write(0x25);
       println("finished signal");
       break;
     
     case 'd':
-      mySerial.write(0x00);
+      mySerial.write(0x25);
       println("finished signal");
       break;
 

@@ -59,10 +59,18 @@ void serialEvent(){
   if (Serial.available() > 0) {
     uint8_t temp = 0xff;
     temp = Serial.read();
-    linearActuatorSerial(temp);
-    cameraSerial(temp);
-    chasisSerial(temp);
-    pantiltSerial(temp);
+    if(temp == 0x10){
+      cameraSerial(temp);
+    }
+    else if(temp >= 0x11 && temp <= 0x13){
+      linearActuatorSerial(temp);
+    }
+    else if(temp >= 0x21 && temp <= 0x25){
+      chasisSerial(temp);
+    }
+    else if(temp >= 0x31 && temp <= 0x35){
+      pantiltSerial(temp);
+    }
   }
 }
 
@@ -252,33 +260,33 @@ void cameraSerial(uint8_t temp){
   uint8_t start_capture = 0;
   switch (temp)
   {
-    case 0:
-      temp = 0xff;
-      myCAM1.OV2640_set_JPEG_size(OV2640_320x240);
-      Serial.println(F("OV2640_320x240")); delay(1000);
-      myCAM1.clear_fifo_flag();
-      break;
-    case 1:
-      temp = 0xff;
-      myCAM1.OV2640_set_JPEG_size(OV2640_640x480);
-      Serial.println(F("OV2640_640x480")); delay(1000);
-      myCAM1.clear_fifo_flag();
-      break;
-    case 2:
-      temp = 0xff;
-      myCAM1.OV2640_set_JPEG_size(OV2640_1024x768);
-      Serial.println(F("OV2640_1024x768")); delay(1000);
-      myCAM1.clear_fifo_flag();
-      break;
-    case 3:
-      {
-        if (stopMotion)
-          stopMotion = false;
-        else
-          stopMotion = true;
-        Serial.println("Stop Motion Enabled: " + String(stopMotion));
-      }
-      break;
+//    case 0:
+//      temp = 0xff;
+//      myCAM1.OV2640_set_JPEG_size(OV2640_320x240);
+//      Serial.println(F("OV2640_320x240")); delay(1000);
+//      myCAM1.clear_fifo_flag();
+//      break;
+//    case 1:
+//      temp = 0xff;
+//      myCAM1.OV2640_set_JPEG_size(OV2640_640x480);
+//      Serial.println(F("OV2640_640x480")); delay(1000);
+//      myCAM1.clear_fifo_flag();
+//      break;
+//    case 2:
+//      temp = 0xff;
+//      myCAM1.OV2640_set_JPEG_size(OV2640_1024x768);
+//      Serial.println(F("OV2640_1024x768")); delay(1000);
+//      myCAM1.clear_fifo_flag();
+//      break;
+//    case 3:
+//      {
+//        if (stopMotion)
+//          stopMotion = false;
+//        else
+//          stopMotion = true;
+//        Serial.println("Stop Motion Enabled: " + String(stopMotion));
+//      }
+//      break;
     case 0x10:
       if (CAM1_EXIST) {
         streamStartTime = millis();
