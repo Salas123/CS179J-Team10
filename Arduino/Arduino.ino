@@ -44,25 +44,25 @@ int angleStep = 5;  // each servo will only move at 5 degrees per quarter-second
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(28800); //921600
+  Serial.begin(250000); //921600
   linearActuatorSetup();
-//  cameraSetup();
+  cameraSetup();
   chasisSetup();
   pantiltSetup();
 }
 
 void loop() {
-//  cameraLoop();
+ cameraLoop();
 }
 
 void serialEvent(){
   if (Serial.available() > 0) {
     uint8_t temp = 0xff;
     temp = Serial.read();
-//    if(temp == 0x10){
-//      cameraSerial(temp);
-//    }
-     if(temp >= 0x11 && temp <= 0x13){
+    if(temp == 0x10){
+      cameraSerial(temp);
+    }
+    if(temp >= 0x11 && temp <= 0x13){
       linearActuatorSerial(temp);
     }
     else if(temp >= 0x21 && temp <= 0x25){

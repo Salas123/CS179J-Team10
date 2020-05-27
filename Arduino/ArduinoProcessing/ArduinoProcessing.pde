@@ -30,7 +30,7 @@ void setup() {
  
   size(640, 480);
  
-  mySerial = new Serial(this, Serial.list()[0], 28800);
+  mySerial = new Serial(this, Serial.list()[0], 250000);
  
   // read bytes into a buffer until you get a linefeed (ASCII 10):
   mySerial.bufferUntil('\n');
