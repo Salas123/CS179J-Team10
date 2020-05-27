@@ -16,7 +16,6 @@
 const int CS1 = 7;
 bool CAM1_EXIST = false;
 bool stopMotion = false;
-bool deviceStop = true;
 ArduCAM myCAM1(OV2640, CS1);
 long int streamStartTime;
 
@@ -45,7 +44,7 @@ int angleStep = 5;  // each servo will only move at 5 degrees per quarter-second
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(28800); //921600
+  Serial.begin(250000); //921600
   linearActuatorSetup();
   cameraSetup();
   chasisSetup();
@@ -53,7 +52,7 @@ void setup() {
 }
 
 void loop() {
-  //cameraLoop();
+ cameraLoop();
 }
 
 void serialEvent(){
@@ -63,7 +62,7 @@ void serialEvent(){
     if(temp == 0x10){
       cameraSerial(temp);
     }
-    else if(temp >= 0x11 && temp <= 0x13){
+    if(temp >= 0x11 && temp <= 0x13){
       linearActuatorSerial(temp);
     }
     else if(temp >= 0x21 && temp <= 0x25){
@@ -289,7 +288,7 @@ void cameraSerial(uint8_t temp){
 //      }
 //      break;
     case 0x10:
-      if (CAM1_EXIST && deviceStop) {
+      if (CAM1_EXIST) {
         streamStartTime = millis();
         myCAMSendToSerial(myCAM1);
         double fps = ((millis() - streamStartTime) / 1000);
@@ -304,39 +303,39 @@ void cameraSerial(uint8_t temp){
 void chasisSerial(uint8_t temp){
   switch(temp){
     case 0x21:
-      //Fowards
-      digitalWrite(A1A, LOW);
-      digitalWrite(A1B, HIGH);
+      //Left
       digitalWrite(B1A, HIGH);
       digitalWrite(B1B, LOW);
-      deviceStop = false;
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, HIGH);
+      
       break;
 
     case 0x22:
-      //Back
+      //Right
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, HIGH); 
       digitalWrite(A1A, HIGH);
       digitalWrite(A1B, LOW);
-      digitalWrite(B1A, LOW);
-      digitalWrite(B1B, HIGH);
-      deviceStop = false;
+
       break;
 
     case 0x23:
-      //Right
-      digitalWrite(A1A, HIGH);
-      digitalWrite(A1B, LOW);
+      //Come Closer
       digitalWrite(B1A, HIGH);
       digitalWrite(B1B, LOW);
-      deviceStop = false;
+      digitalWrite(A1A, HIGH);
+      digitalWrite(A1B, LOW);
+
       break;
 
     case 0x24:
-      //Left
-      digitalWrite(A1A, LOW);
-      digitalWrite(A1B, HIGH);
+      //Back up
       digitalWrite(B1A, LOW);
       digitalWrite(B1B, HIGH);
-      deviceStop = false;
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, HIGH);
+
       break;
 
     default:
@@ -344,7 +343,6 @@ void chasisSerial(uint8_t temp){
       digitalWrite(A1B, LOW);
       digitalWrite(B1A, LOW);
       digitalWrite(B1B, LOW);
-      deviceStop = true;
       break;
   }
 }
@@ -352,7 +350,7 @@ void chasisSerial(uint8_t temp){
 void pantiltSerial(uint8_t temp){
   switch(temp){
     case 0x31:
-      //SERVO1 right
+      //SERVO1 left
       if (s1_angle > 0 && s1_angle <= 180) {
         s1_angle = s1_angle - angleStep;
         if (s1_angle < 0) {
@@ -369,7 +367,7 @@ void pantiltSerial(uint8_t temp){
       break;
 
     case 0x32:
-      //SERVO1 left
+      //SERVO1 Right
       if (s1_angle >= 0 && s1_angle < 180) {
         s1_angle = s1_angle + angleStep;
         if (s1_angle > 180) {
