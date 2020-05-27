@@ -190,12 +190,12 @@ void pantiltKP(){
       break;
     
     case 'l':
-      mySerial.write(0x31);
+      mySerial.write(0x32);
       println("sending right signal");
       break;
     
     case 'j':
-      mySerial.write(0x32);
+      mySerial.write(0x31);
       println("sending left signal");
       break;
 
@@ -236,22 +236,22 @@ void chasisKP(){
   switch(key) {
  
     case 'w':
-      mySerial.write(0x21);
-      println("Sending forward signal");
+      mySerial.write(0x24);
+      println("Farther Back signal");
       break;
 
     case 's':
-      mySerial.write(0x22);
-      println("sending backward signal");
+      mySerial.write(0x23);
+      println("Come Closer signal");
       break;
     
     case 'd':
-      mySerial.write(0x23);
+      mySerial.write(0x22);
       println("sending right signal");
       break;
     
     case 'a':
-      mySerial.write(0x24);
+      mySerial.write(0x21);
       println("sending left signal");
       break;
 
