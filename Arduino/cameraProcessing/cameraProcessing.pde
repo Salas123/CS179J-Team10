@@ -43,7 +43,7 @@ void setup() {
  
   // that your microcontroller is attached to.
  
-  myPort = new Serial(this, Serial.list()[0], 250000);
+  myPort = new Serial(this, Serial.list()[0], 28800);
  
  
  

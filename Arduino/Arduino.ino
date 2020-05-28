@@ -1,4 +1,5 @@
 //Collaborated Code with Kathleen & Bailey
+//Code Merged with Camera and Linear Actuator
 #include <Servo.h>
 #include <Wire.h>
 #include <ArduCAM.h>
@@ -20,26 +21,56 @@ long int streamStartTime;
 
 //linear actuator declarations
 Servo actuator;
-const int pwmPin = 9; //change to pwm pin
+const int pwmPin = 10; //change to pwm pin
 int pwm = 1000;
+
+//chasis declarations
+const int A1A = 3;
+const int A1B = 2;
+const int B1A = 4;
+const int B1B = 5;
+
+//pantilt declarations
+Servo servo1; // first servo will control left/right movement
+Servo servo2; // second servo will control up/down movement
+
+const int pantiltLR = 9;//@Kathleen may need to change
+const int pantiltUD = 6;//@Kathleen may need to change
+int s1_angle = 90;  // servo1 will start at 90 degrees
+int s2_angle = 90;  // servo2 will start at 90 degrees
+int angleStep = 5;  // each servo will only move at 5 degrees per quarter-second
+
+//BLE declarations none
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(250000); //921600
   linearActuatorSetup();
   cameraSetup();
+  chasisSetup();
+  pantiltSetup();
 }
 
 void loop() {
-  cameraLoop();
+// cameraLoop();
 }
 
 void serialEvent(){
   if (Serial.available() > 0) {
     uint8_t temp = 0xff;
     temp = Serial.read();
-    linearActuatorSerial(temp);
-    cameraSerial(temp);
+    if(temp == 0x10){
+      cameraSerial(temp);
+    }
+    if(temp >= 0x07 && temp <= 0x08){
+      linearActuatorSerial(temp);
+    }
+    else if(temp >= 0x09 && temp <= 0x0C){
+      chasisSerial(temp);
+    }
+    else if(temp >= 0x03 && temp <= 0x06){
+      pantiltSerial(temp);
+    }
   }
 }
 
@@ -51,14 +82,14 @@ void linearActuatorSetup(){
 
 void linearActuatorSerial(uint8_t temp){
   switch (temp){
-    case 0x11:
+    case 0x08:
       if(pwm > 1000){
         pwm -= 5;
       }
       Serial.println("retract received");
       break;
 
-    case 0x12:
+    case 0x07:
       if(pwm < 2000){
         pwm += 5;
       }
@@ -66,7 +97,7 @@ void linearActuatorSerial(uint8_t temp){
       break;
 
     default:
-      Serial.println("unrecognized");
+     // Serial.println("unrecognized");
       break;
   }
   actuator.writeMicroseconds(pwm);
@@ -122,8 +153,22 @@ void cameraSetup(){
   Serial.println("Ready:,1");
 }
 
+void chasisSetup(){
+  pinMode(A1A, OUTPUT);
+  pinMode(A1B, OUTPUT);
+  pinMode(B1A, OUTPUT);
+  pinMode(B1B, OUTPUT);
+}
+
+void pantiltSetup(){
+  servo1.attach(pantiltLR);   // attaches the servo on pin 9 to the servo object: LEFT AND RIGHT
+  servo2.attach(pantiltUD);   // attaches the servo on pin 10 to the servo object :UP AND DOWN
+  servo1.write(s1_angle);  // send servo1 to the middle at 90 degrees
+  servo2.write(s2_angle);  // send servo2 to the middle at 90 degrees
+}
+
 void cameraLoop(){
-  if (CAM1_EXIST && stopMotion) {
+  if (CAM1_EXIST) {
     streamStartTime = millis();
     myCAMSendToSerial(myCAM1);
     double fps = ((millis() - streamStartTime) / 1000);
@@ -215,33 +260,33 @@ void cameraSerial(uint8_t temp){
   uint8_t start_capture = 0;
   switch (temp)
   {
-    case 0:
-      temp = 0xff;
-      myCAM1.OV2640_set_JPEG_size(OV2640_320x240);
-      Serial.println(F("OV2640_320x240")); delay(1000);
-      myCAM1.clear_fifo_flag();
-      break;
-    case 1:
-      temp = 0xff;
-      myCAM1.OV2640_set_JPEG_size(OV2640_640x480);
-      Serial.println(F("OV2640_640x480")); delay(1000);
-      myCAM1.clear_fifo_flag();
-      break;
-    case 2:
-      temp = 0xff;
-      myCAM1.OV2640_set_JPEG_size(OV2640_1024x768);
-      Serial.println(F("OV2640_1024x768")); delay(1000);
-      myCAM1.clear_fifo_flag();
-      break;
-    case 3:
-      {
-        if (stopMotion)
-          stopMotion = false;
-        else
-          stopMotion = true;
-        Serial.println("Stop Motion Enabled: " + String(stopMotion));
-      }
-      break;
+//    case 0:
+//      temp = 0xff;
+//      myCAM1.OV2640_set_JPEG_size(OV2640_320x240);
+//      Serial.println(F("OV2640_320x240")); delay(1000);
+//      myCAM1.clear_fifo_flag();
+//      break;
+//    case 1:
+//      temp = 0xff;
+//      myCAM1.OV2640_set_JPEG_size(OV2640_640x480);
+//      Serial.println(F("OV2640_640x480")); delay(1000);
+//      myCAM1.clear_fifo_flag();
+//      break;
+//    case 2:
+//      temp = 0xff;
+//      myCAM1.OV2640_set_JPEG_size(OV2640_1024x768);
+//      Serial.println(F("OV2640_1024x768")); delay(1000);
+//      myCAM1.clear_fifo_flag();
+//      break;
+//    case 3:
+//      {
+//        if (stopMotion)
+//          stopMotion = false;
+//        else
+//          stopMotion = true;
+//        Serial.println("Stop Motion Enabled: " + String(stopMotion));
+//      }
+//      break;
     case 0x10:
       if (CAM1_EXIST) {
         streamStartTime = millis();
@@ -250,6 +295,146 @@ void cameraSerial(uint8_t temp){
         Serial.println("Total Time: " + String(fps));
       }
       break;
+    default:
+      break;
+  }
+}
+
+void chasisSerial(uint8_t temp){
+  switch(temp){
+    case 0x0B:
+      //Left
+      digitalWrite(B1A, HIGH);
+      digitalWrite(B1B, LOW);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, HIGH);
+      delay(30);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
+      break;
+
+    case 0x0C:
+      //Right
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, HIGH); 
+      digitalWrite(A1A, HIGH);
+      digitalWrite(A1B, LOW);
+      delay(30);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
+      break;
+
+    case 0x0A:
+      //Come Closer
+      digitalWrite(B1A, HIGH);
+      digitalWrite(B1B, LOW);
+      digitalWrite(A1A, HIGH);
+      digitalWrite(A1B, LOW);
+      delay(30);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
+
+      break;
+
+    case 0x09:
+      //Back up
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, HIGH);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, HIGH);
+      delay(30);
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
+
+      break;
+
+    default:
+      digitalWrite(A1A, LOW);
+      digitalWrite(A1B, LOW);
+      digitalWrite(B1A, LOW);
+      digitalWrite(B1B, LOW);
+      break;
+  }
+}
+
+void pantiltSerial(uint8_t temp){
+  switch(temp){
+    case 0x05:
+      //SERVO1 left
+      if (s1_angle > 0 && s1_angle <= 180) {
+        s1_angle = s1_angle - angleStep;
+        if (s1_angle < 0) {
+          s1_angle = 0;
+        }
+        else {
+          servo1.write(s1_angle); // move the servo to desired angle
+          Serial.print("Moved to: ");
+          Serial.print(s1_angle);   // print the angle
+          Serial.println(" degree");
+        }
+      }
+      delay(250); // waits for the servo to get there
+      break;
+
+    case 0x06:
+      //SERVO1 Right
+      if (s1_angle >= 0 && s1_angle < 180) {
+        s1_angle = s1_angle + angleStep;
+        if (s1_angle > 180) {
+          s1_angle = 180;
+        }
+        else {
+          servo1.write(s1_angle); // move the servo to desired angle
+          Serial.print("Moved to: ");
+          Serial.print(s1_angle);   // print the angle
+          Serial.println(" degree");
+        }
+      }
+      delay(250); // waits for the servo to get there
+      break;
+
+    case 0x03:
+      //SERVO2 up
+      if (s2_angle > 90 && s2_angle <= 180) {
+        s2_angle = s2_angle - angleStep;
+        if (s2_angle < 90) {
+          s2_angle = 90;
+        }
+        else {
+          servo2.write(s2_angle); // move the servo to desired angle
+          Serial.print("Moved to: ");
+          Serial.print(s2_angle);   // print the angle
+          Serial.println(" degree");
+        }
+      }
+      delay(250); // waits for the servo to get there]
+      break;
+
+    case 0x04:
+      //SERVO2 down
+      if (s2_angle >= 90 && s2_angle < 180) {
+        s2_angle = s2_angle + angleStep;
+        if (s1_angle > 180) {
+          s2_angle = 180;
+        }
+        else {
+          servo2.write(s2_angle); // move the servo to desired angle
+          Serial.print("Moved to: ");
+          Serial.print(s2_angle);   // print the angle
+          Serial.println(" degree");
+        }
+      }
+      delay(250); // waits for the servo to get there
+      break;
+
     default:
       break;
   }
