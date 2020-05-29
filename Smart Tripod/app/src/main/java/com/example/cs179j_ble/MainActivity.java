@@ -274,14 +274,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d("HC-06:", "Device has been connected!");
         view.setVisibility(View.GONE);
         view.setEnabled(false);
+
+        search_button.setVisibility(View.GONE);
+        start_button.setVisibility(View.GONE);
+        connectButton.setVisibility(View.GONE);
         controllerState.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
         String state_text = baseString + guiState;
         controllerState.setText(state_text);
-
-        search_button.setVisibility(View.GONE);
-        start_button.setText("Device Connected!");
-        start_button.setEnabled(false);
     }
 
     /**
@@ -360,16 +360,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void centerButton_activity(View view)
     {
-        Context context = getApplicationContext();
-        CharSequence text = "Controlling: Linear Actuator!";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-
-
-
-
         guiState = "Linear Actuator";
         String state = baseString + guiState;
         controllerState.setText(state);
@@ -383,18 +373,10 @@ public class MainActivity extends AppCompatActivity {
         rightButton.setVisibility(View.INVISIBLE);
         view.setVisibility(View.INVISIBLE);
         linearActButton.setVisibility(View.VISIBLE);
-
     }
 
     public void linearActuator_activity(View view)
     {
-        Context context = getApplicationContext();
-        CharSequence text = "Controlling: Pan Tilt Camera!";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-
         Log.d("CHANGING STATE:", "Buttons now control Pan Tilt Kit.");
         guiState = "Pan Tilt";
 
@@ -413,13 +395,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void cameraPanTilt_activity (View view)
     {
-        Context context = getApplicationContext();
-        CharSequence text = "Controlling: Car Chassis!";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-
         Log.d("CHANGING STATE:", "Buttons now control Car Chassis.");
         guiState = "Car Chassis";
 
@@ -440,8 +415,6 @@ public class MainActivity extends AppCompatActivity {
                 connectedThread.write(commandsList.indexOf("rightCarChassis"));
                 Log.d("SENDING DATA:", "Data sent!");
                 Log.d("MOVING CAR CHASSIS:", "Car will move right.");
-
-
             }
             else if(guiState == "Pan Tilt" )
             {
@@ -451,7 +424,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("SENDING DATA:", "Data Sent!");
                 Log.d("MOVING CAMERA:", "Pan Tilt Kit will move right.");
             }
-
         }
         else
             Log.d("SENDING DATA:", "mmSocket is NOT connected!");
