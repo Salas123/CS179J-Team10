@@ -6,8 +6,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -15,6 +19,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 
@@ -34,9 +39,13 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,13 +55,11 @@ public class MainActivity extends AppCompatActivity {
     // TAG is used for informational messages
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    // Variables to access objects from the layout such as buttons, switches, values
+    // Variables to access objects from the UI Layout such as buttons, layouts, etc.
     private static Button start_button;
     private static Button search_button;
     private static Button connectButton;
-
-    private static Camera camera;
-    private static TextView cameraArea_Text;
+    private static ImageView cameraArea;
     private static FloatingActionButton upButton;
     private static FloatingActionButton leftButton;
     private static FloatingActionButton rightButton;
@@ -65,35 +72,42 @@ public class MainActivity extends AppCompatActivity {
     private static AlertDialog.Builder builder;
     private static TextView controllerState;
     private static ListView listView;
+
+
     private static ArrayList<String> tasks = new ArrayList<>();
+
+    // Array List of string representation of our commands, i.e. each command's respective index is received from the Arduino
     private static ArrayList<String> commandsList = new ArrayList<>(
             Arrays.asList("flashOff", "flashOn", "snapPicture","upPanTiltKit","downPanTiltKit","leftPanTiltKit","rightPanTiltKit",
                     "upLinearActuator","downLinearActuator","upCarChassis","downCarChassis","leftCarChassis","rightCarChassis"));
 
-    // Bluetooth Global Variables
-    private static boolean deviceFound = false;
-
     private static ArrayAdapter<String> adapter;
+
+    // HC-06 UUID string to create a device for the bluetooth adapter to connect to
     private static String hc_06UUID = "00001101-0000-1000-8000-00805f9b34fb";
     private static String baseString = "Controlling: ";
 
+    // Objects for needed for Bluetooth services
     BluetoothAdapter BTAdapter = BluetoothAdapter.getDefaultAdapter();
     BluetoothDevice smartTripod;
     BluetoothDevice mmDevice;
     BluetoothSocket mmSocket;
     Handler mHandler;
     ConnectedThread connectedThread;
-
     private static final int REQUEST_ENABLE_BLE = 1;
-
     //This is required for Android 6.0 (Marshmallow)
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
+
     int data = 0;
-    int i = 0;
+
+    // Initial controlling state is initialized to the Car Chassis
     String guiState = "Car Chassis";
-    String[] commands = new String[]{"flashOff", "flashOn", "snapPicture","upPanTiltKit","downPanTiltKit","leftPanTiltKit","rightPanTiltKit",
-  "upLinearActuator","downLinearActuator","upBLEModuleService","downBLEModuleService","leftBLEModuleService","rightBLEModuleService"};
+
+    // Bitmap to be converted to a .jpeg image and saved to user's phone dir.
+    Bitmap imageToBeSaved;
+
+
 
     /**
      * This is called when the main activity is first created
@@ -121,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         upButton = findViewById(R.id.upButton);
         linearActButton = findViewById(R.id.linearActuator);
         panTiltButton = findViewById(R.id.cameraPanTilt);
-        cameraArea_Text = findViewById(R.id.cameraAreaText);
+        cameraArea = findViewById(R.id.cameraArea);
 
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, tasks);
         listView.setAdapter(adapter);
@@ -224,11 +238,17 @@ public class MainActivity extends AppCompatActivity {
         connectButton.setEnabled(true);
     }
 
+    /**
+     *  This method is for enabling Bluetooth Services on the Device
+     *  Then, it creates a socket to be connected to assigned UUID string (in our case HC-06 UUID)
+     *
+     */
     public void initiateBluetoothProcess()
     {
         if(BTAdapter.isEnabled()){
             //attempt to connect to bluetooth module
             BluetoothSocket tmp = null;
+            // smartTripod should have the name of "HC-06" and mac address assigned from previous function "searchBluetooth"
             mmDevice = smartTripod;
             //create socket
             try {
@@ -244,16 +264,24 @@ public class MainActivity extends AppCompatActivity {
         {
             try{mmSocket.close();}catch(IOException c){return;}
         }
+            // This is the handler that bridges communication between threads operating in the backend to the front end of the UI activity
         Log.i("[BLUETOOTH]", "Creating handler");
         mHandler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
                 //super.handleMessage(msg);
                 if(msg.what == ConnectedThread.RESPONSE_MESSAGE){
-                    String txt = (String)msg.obj;
-                    //response.append("\n" + txt);
+                    // image buffer received from connect thread
+                    byte image[] = (byte[])msg.obj;
+                    // image buffer conversion from byte array to bitmap
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(image,0,msg.arg1);
+                    // setting image into our imageView UI component
+                    cameraArea.setImageBitmap(bitmap);
 
-                    cameraArea_Text.setText(txt);
+                    //This will constantly hold the most recent image for saving to user's phone
+                    imageToBeSaved = bitmap;
+                    
+
                 }
 
 
@@ -443,12 +471,7 @@ public class MainActivity extends AppCompatActivity {
               Log.d("MOVING CAR CHASSIS:", "Car will move backward.");
             }
             else if (guiState == "Linear Actuator") {
-//              int val = 0;
-//              for (i = 0; i<commands.length; i++) {
-//                if (commands[i]=="downLinearActuator") {
-//                  val = i;
-//                }
-//              }
+
               Log.d("STATE: ", "Linear Actuator");
               Log.d("SENDING DATA:", "Value sent: " + commandsList.indexOf("downLinearActuator"));
               connectedThread.write(commandsList.indexOf("downLinearActuator"));
@@ -456,12 +479,7 @@ public class MainActivity extends AppCompatActivity {
               Log.d("MOVING LA:", "Linear Actuator will move down.");
             }
             else if (guiState == "Pan Tilt") {
-//              int val = 0;
-//              for (i = 0; i<commands.length; i++) {
-//                if (commands[i]=="downPanTiltKit") {
-//                  val = i;
-//                }
-//              }
+
               Log.d("SENDING DATA:", "Value sent: " + commandsList.indexOf("downPanTiltKit"));
               connectedThread.write(commandsList.indexOf("downPanTiltKit"));
               Log.d("SENDING DATA:", "Data sent!");
@@ -499,49 +517,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     public void cameraButton_activity(View view)
     {
-        if(mmSocket.isConnected())
-        {
-            connectedThread.run();
-            Log.d("CT-RUN:", " Message: " + mHandler.obtainMessage());
-//          int val = 0;
-//          for (i = 0; i<commands.length; i++) {
-//            if (commands[i]=="snapPicture") {
-//              val = i;
-//            }
-//          }
-          Log.d("SENDING DATA:", "Value sent: " + commandsList.indexOf("snapPicture"));
-          connectedThread.write(commandsList.indexOf("snapPicture"));
-          Log.d("SENDING DATA:", "Data sent!");
-          Log.d("SENDING DATA:", "Camera will snap a picture.");
-        }
-        else{
-            Log.d("SENDING DATA:", "mmSocket is NOT connected");
-        }
-        builder = new AlertDialog.Builder(this);
-        builder.setMessage("Do you want to save this photo?");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                Toast.makeText(getApplicationContext(),"You saved this photo!", Toast.LENGTH_SHORT).show();
 
-            }
-        });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                Toast.makeText(getApplicationContext(), "Photo not saved!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.setTitle("Photo Captured!");
-        alert.show();
     }
+
 
 
     /**
