@@ -550,11 +550,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("SAVING-IMAGE: ", "Image saved at this location " + imageLocation);
 
 
-        //String imageLocation2 = createDirectoryAndSaveFile(imageToBeSaved, imageName);
-        //Log.d("SAVING-IMAGE: ", "Image saved at this location " + imageLocation2);
-
-
-
     }
 
 
