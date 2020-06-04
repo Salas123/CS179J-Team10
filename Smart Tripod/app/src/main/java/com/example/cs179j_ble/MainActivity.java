@@ -548,6 +548,7 @@ public class MainActivity extends AppCompatActivity {
         String imageName =  System.currentTimeMillis() + ".jpg";
         String imageLocation = saveToInternalStorage(imageToBeSaved, imageName);
         Log.d("SAVING-IMAGE: ", "Image saved at this location " + imageLocation);
+        Toast.makeText(this, "Image saved...", Toast.LENGTH_SHORT).show();
 
 
     }
