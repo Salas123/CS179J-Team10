@@ -13,3 +13,7 @@ Next, run ```expo start``` or ```npm start``` to run web app and open expo app t
 
 
 If it doesn't run on your phone, try  ```expo start --no-dev --minify```
+
+
+
+![alt text](https://github.com/Salas123/CS179J-Team10/blob/Salas123-patch-1/Screen%20Shot%202020-10-02%20at%201.03.52%20PM.png)
