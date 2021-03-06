@@ -24,6 +24,7 @@ If it doesn't run on your phone, try  ```expo start --no-dev --minify```
 
 
 
-![alt text](https://user-images.githubusercontent.com/20329150/110224816-e576ea00-7e93-11eb-8f2d-37ec3659f486.mp4)
+## Link to video demonstration
+![Smart Tripod video link](https://user-images.githubusercontent.com/20329150/110224816-e576ea00-7e93-11eb-8f2d-37ec3659f486.mp4)
 
 
